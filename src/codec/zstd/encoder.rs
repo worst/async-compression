@@ -9,8 +9,14 @@ pub struct ZstdEncoder {
 
 impl ZstdEncoder {
     pub(crate) fn new(level: i32) -> Self {
+        // We are going to try to hard code things to like, 4 threads. yolo.
+        let mut encoder = Encoder::new(level).unwrap();
+        let num_threads = zstd_safe::CParameter::NbWorkers(4);
+        encoder.set_parameter(num_threads).unwrap();
+
         Self {
-            encoder: Unshared::new(Encoder::new(level).unwrap()),
+            // encoder: Unshared::new(Encoder::new(level).unwrap()),
+            encoder: Unshared::new(encoder),
         }
     }
 }
