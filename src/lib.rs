@@ -208,7 +208,7 @@ pub enum Level {
     Precise(u32),
 
     /// ZSTD CUSTOM SHIT!
-    ZstdCustom((u32, u32)),
+    ZstdCustom(u32, u32),
 }
 
 impl Level {
@@ -264,7 +264,7 @@ impl Level {
                 quality: libzstd::DEFAULT_COMPRESSION_LEVEL,
                 ..Default::default()
             },
-            Self::ZstdCustom((quality, num_threads)) => ZstdEncoderParams {
+            Self::ZstdCustom(quality, num_threads) => ZstdEncoderParams {
                 quality: quality as i32,
                 num_threads,
             },
