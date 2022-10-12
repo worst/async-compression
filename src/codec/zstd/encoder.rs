@@ -11,7 +11,7 @@ impl ZstdEncoder {
     pub(crate) fn new(level: i32) -> Self {
         // We are going to try to hard code things to like, 4 threads. yolo.
         let mut encoder = Encoder::new(level).unwrap();
-        let num_threads = zstd_safe::CParameter::NbWorkers(4);
+        let num_threads = zstd_safe::CParameter::NbWorkers(8);
         encoder.set_parameter(num_threads).unwrap();
 
         Self {
