@@ -188,6 +188,9 @@ mod util;
 #[cfg(feature = "brotli")]
 use brotli::enc::backward_references::BrotliEncoderParams;
 
+#[cfg(feature = "zstd")]
+use codec::ZstdEncoderParams;
+
 /// Level of compression data should be compressed with.
 #[non_exhaustive]
 #[derive(Clone, Copy, Debug)]
@@ -203,6 +206,9 @@ pub enum Level {
     /// and the specific implementation backing it.
     /// Qualities are implicitly clamped to the algorithm's maximum.
     Precise(u32),
+
+    /// ZSTD CUSTOM SHIT!
+    ZstdCustom((u32, u32)),
 }
 
 impl Level {
@@ -213,6 +219,7 @@ impl Level {
             Self::Best => params.quality = 11,
             Self::Precise(quality) => params.quality = quality.min(11) as i32,
             Self::Default => (),
+            Self::ZstdCustom(_) => unimplemented!(),
         }
 
         params
@@ -239,12 +246,28 @@ impl Level {
     }
 
     #[cfg(feature = "zstd")]
-    fn into_zstd(self) -> i32 {
+    fn into_zstd(self) -> ZstdEncoderParams {
         match self {
-            Self::Fastest => 1,
-            Self::Best => 21,
-            Self::Precise(quality) => quality.min(21) as i32,
-            Self::Default => libzstd::DEFAULT_COMPRESSION_LEVEL,
+            Self::Fastest => ZstdEncoderParams {
+                quality: 1,
+                ..Default::default()
+            },
+            Self::Best => ZstdEncoderParams {
+                quality: 21,
+                ..Default::default()
+            },
+            Self::Precise(quality) => ZstdEncoderParams {
+                quality: quality.min(21) as i32,
+                ..Default::default()
+            },
+            Self::Default => ZstdEncoderParams {
+                quality: libzstd::DEFAULT_COMPRESSION_LEVEL,
+                ..Default::default()
+            },
+            Self::ZstdCustom((quality, num_threads)) => ZstdEncoderParams {
+                quality: quality as i32,
+                num_threads,
+            },
         }
     }
 

@@ -7,15 +7,28 @@ pub struct ZstdEncoder {
     encoder: Unshared<Encoder<'static>>,
 }
 
+#[derive(Debug, Default)]
+pub struct ZstdEncoderParams {
+    pub quality: i32,
+    pub num_threads: u32,
+}
+
 impl ZstdEncoder {
-    pub(crate) fn new(level: i32) -> Self {
+    pub(crate) fn new(params: ZstdEncoderParams) -> Self {
+        Self {
+            encoder: Unshared::new(Encoder::new(params.quality).unwrap()),
+        }
+    }
+
+    pub(crate) fn with_threads(params: ZstdEncoderParams) -> Self {
         // We are going to try to hard code things to like, 4 threads. yolo.
-        let mut encoder = Encoder::new(level).unwrap();
-        let num_threads = zstd_safe::CParameter::NbWorkers(8);
+        // it is not at all clear what the performance implications are.
+        let mut encoder = Encoder::new(params.quality).unwrap();
+
+        let num_threads = zstd_safe::CParameter::NbWorkers(params.num_threads);
         encoder.set_parameter(num_threads).unwrap();
 
         Self {
-            // encoder: Unshared::new(Encoder::new(level).unwrap()),
             encoder: Unshared::new(encoder),
         }
     }

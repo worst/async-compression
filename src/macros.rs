@@ -82,6 +82,15 @@ macro_rules! algos {
 
         algos!(@algo zstd ["zstd"] ZstdDecoder ZstdEncoder<$inner> {
             pub fn with_quality(inner: $inner, level: crate::Level) -> Self {
+
+                // let params = brotli::enc::backward_references::BrotliEncoderParams::default();
+                // let level = level.into_zstd()
+                // Self {
+                //     inner: crate::$($mod::)+generic::Encoder::new(
+                //         inner,
+                //         crate::codec::BrotliEncoder::new(level.into_brotli(params)),
+                //     ),
+                // }
                 Self {
                     inner: crate::$($mod::)+generic::Encoder::new(
                         inner,

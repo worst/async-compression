@@ -41,7 +41,7 @@ pub(crate) use self::xz2::{Xz2Decoder, Xz2Encoder, Xz2FileFormat};
 #[cfg(feature = "zlib")]
 pub(crate) use self::zlib::{ZlibDecoder, ZlibEncoder};
 #[cfg(feature = "zstd")]
-pub(crate) use self::zstd::{ZstdDecoder, ZstdEncoder};
+pub(crate) use self::zstd::{ZstdDecoder, ZstdEncoder, ZstdEncoderParams};
 
 pub trait Encode {
     fn encode(
